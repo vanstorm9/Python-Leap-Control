@@ -1,0 +1,65 @@
+#!/bin/bash
+
+case $1 in
+	1) echo "Shut Down"
+	   # Shut down
+	   sudo shutdown -h now
+	   exit;;
+	3) echo "Disable Keyboard"
+	   # Disable Keyboard
+		if [ -f ./xmodmap.new ]	#remove xmodmap.new if it exists
+		then
+  		 rm xmodmap.new
+		fi
+		if [ -f ./xmodmap.old ]        #remove xmodmap.old if it exists
+		then
+  		 rm xmodmap.old
+		fi
+
+		xmodmap -pke > xmodmap.old	#backup current keyboard config
+
+		touch xmodmap.new		#write a blank keyboard config
+
+		for i in `seq 8 255`; do	
+ 		  echo "keycode  $i = " >> xmodmap.new
+		done
+
+		xmodmap xmodmap.new;;	#set keyboard to blank
+	4) echo "Restore Keyboard" 
+	   # Restore keyboard
+	   xmodmap xmodmap.old;;
+	5) echo "Light increased" 
+ 	   xbacklight -inc 10;;	
+	6) echo "Light decreased" 
+	   xbacklight -dec 10;;
+	7) echo "Wake Up"
+	   # Wake Up 
+	   xdotool key '';;
+
+	2) echo "Shut Off Monitor"
+	   # Shut Off Monitor 
+	   xset dpms force off;;
+
+	8) echo "Locking Monitor"
+	   gnome-screensaver-command -l
+	   exit;;
+	9) echo "Opening browser"
+	   gnome-open http://google.com
+	   exit;;
+	10) echo "Closing all browsers"
+		killall chrome
+		killall firefox
+		exit;;
+
+	11) echo "Scrolling up"
+		Shift+PageUp
+		exit;;
+
+
+	# just in case we need extra numbers
+	# 14) echo "Maximize Window" 
+	     # Maximize Window
+	# 15) echo "ten" ;;
+
+	*) echo "INVALID GESTURE!" ;;
+esac
